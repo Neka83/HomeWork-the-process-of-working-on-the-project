@@ -8,16 +8,15 @@ public class TopSavingRuleSet implements RecommendationRuleSet {
 
     @Override
     public boolean isApplicable(String userId) {
-        // TODO: SQL-логика будет позже
-        return false;
+        return true;
     }
 
     @Override
     public RecommendationDto getRecommendation() {
         return new RecommendationDto(
-                "59efc529-2fff-41af-baff-90ccd7402925",
+                "TOP_SAVING",
                 "Top Saving",
-                "Откройте свою собственную «Копилку» с нашим банком!"
+                "Best saving account with high interest"
         );
     }
 }

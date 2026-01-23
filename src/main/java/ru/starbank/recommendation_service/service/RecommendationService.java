@@ -1,34 +1,47 @@
 package ru.starbank.recommendation_service.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.starbank.recommendation_service.dto.RecommendationDto;
-import ru.starbank.recommendation_service.repository.RecommendationRepository;
+import ru.starbank.recommendation_service.rules.service.DynamicRuleRecommendationService;
 import ru.starbank.recommendation_service.rules.RecommendationRuleSet;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class RecommendationService {
 
-    private final RecommendationRepository repository;
     private final List<RecommendationRuleSet> ruleSets;
+    private final DynamicRuleRecommendationService dynamicRuleRecommendationService;
 
-    public RecommendationService(
-            RecommendationRepository repository,
-            List<RecommendationRuleSet> ruleSets
-    ) {
-        this.repository = repository;
-        this.ruleSets = ruleSets;
-    }
+    public List<RecommendationDto> getRecommendations(UUID userId) {
 
-    public int testTransactionsCount() {
-        return repository.countAllTransactions();
-    }
+        List<RecommendationDto> result = new ArrayList<>();
 
-    public List<RecommendationDto> getRecommendations(String userId) {
-        return ruleSets.stream()
-                .filter(rule -> rule.isApplicable(userId))
-                .map(RecommendationRuleSet::getRecommendation)
-                .toList();
+        // 1️⃣ Статические правила
+        for (RecommendationRuleSet ruleSet : ruleSets) {
+            if (ruleSet.isApplicable(userId.toString())) {
+                result.add(ruleSet.getRecommendation());
+            }
+        }
+
+        // 2️⃣ Динамические правила (из БД)
+        List<String> dynamicProducts =
+                dynamicRuleRecommendationService.getRecommendations(userId);
+
+        for (String productName : dynamicProducts) {
+            result.add(
+                    new RecommendationDto(
+                            productName,
+                            productName,
+                            "Dynamic rule recommendation"
+                    )
+            );
+        }
+
+        return result;
     }
 }

@@ -10,20 +10,16 @@ public class RuleConditionEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
     private String query;
 
-    @Column(nullable = false)
+    @Column(length = 1000)
     private String arguments;
 
-    @Column(nullable = false)
     private boolean negate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "rule_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "rule_id")
     private RuleEntity rule;
-
-    // ===== getters / setters =====
 
     public Long getId() {
         return id;

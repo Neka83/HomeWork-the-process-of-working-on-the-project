@@ -2,6 +2,7 @@ package ru.starbank.recommendation_service.rules.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.starbank.recommendation_service.rules.dto.RuleConditionDto;
 import ru.starbank.recommendation_service.rules.dto.RuleDto;
 import ru.starbank.recommendation_service.rules.entity.RuleConditionEntity;
 import ru.starbank.recommendation_service.rules.entity.RuleEntity;
@@ -20,25 +21,25 @@ public class RuleServiceImpl implements RuleService {
     @Override
     public RuleDto create(RuleDto dto) {
 
-        RuleEntity entity = new RuleEntity();
-        entity.setProductName(dto.getProductName());
-        entity.setProductId(dto.getProductId());
-        entity.setProductText(dto.getProductText());
+        RuleEntity rule = new RuleEntity();
+        rule.setProductName(dto.getProductName());
+        rule.setProductText(dto.getProductText());
 
-        List<RuleConditionEntity> conditions = dto.getRules().stream()
-                .map(c -> {
-                    RuleConditionEntity e = new RuleConditionEntity();
-                    e.setQuery(c.getQuery());
-                    e.setArguments(String.join(",", c.getArguments()));
-                    e.setNegate(c.isNegate());
-                    e.setRule(entity);
-                    return e;
-                })
-                .collect(Collectors.toList());
+        List<RuleConditionEntity> conditions =
+                dto.getRules().stream()
+                        .map(c -> {
+                            RuleConditionEntity e = new RuleConditionEntity();
+                            e.setQuery(c.getQuery());
+                            e.setArguments(String.join(",", c.getArguments()));
+                            e.setNegate(c.isNegate());
+                            e.setRule(rule);
+                            return e;
+                        })
+                        .collect(Collectors.toList());
 
-        entity.setConditions(conditions);
+        rule.setConditions(conditions);
 
-        RuleEntity saved = ruleRepository.save(entity);
+        RuleEntity saved = ruleRepository.save(rule);
         dto.setId(saved.getId());
 
         return dto;
@@ -61,8 +62,8 @@ public class RuleServiceImpl implements RuleService {
         RuleDto dto = new RuleDto();
         dto.setId(entity.getId());
         dto.setProductName(entity.getProductName());
-        dto.setProductId(entity.getProductId());
         dto.setProductText(entity.getProductText());
+        dto.setRules(List.of());
         return dto;
     }
 }

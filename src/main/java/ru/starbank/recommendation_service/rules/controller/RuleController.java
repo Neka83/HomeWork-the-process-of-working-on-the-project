@@ -1,6 +1,7 @@
 package ru.starbank.recommendation_service.rules.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.starbank.recommendation_service.rules.dto.RuleDto;
 import ru.starbank.recommendation_service.rules.service.RuleService;
@@ -26,6 +27,7 @@ public class RuleController {
     }
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable UUID id) {
         ruleService.deleteById(id);
     }

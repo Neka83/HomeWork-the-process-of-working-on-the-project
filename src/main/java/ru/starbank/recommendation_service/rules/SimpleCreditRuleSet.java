@@ -8,15 +8,15 @@ public class SimpleCreditRuleSet implements RecommendationRuleSet {
 
     @Override
     public boolean isApplicable(String userId) {
-        return false;
+        return true;
     }
 
     @Override
     public RecommendationDto getRecommendation() {
         return new RecommendationDto(
                 "SIMPLE_CREDIT",
-                "Кредит наличными",
-                "Оформите кредит — быстрое решение и выгодные условия"
+                "Simple Credit",
+                "Quick credit with minimal documents"
         );
     }
 }

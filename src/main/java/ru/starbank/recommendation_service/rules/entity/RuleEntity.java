@@ -10,26 +10,16 @@ public class RuleEntity {
 
     @Id
     @GeneratedValue
-    @Column(columnDefinition = "UUID")
     private UUID id;
 
-    @Column(name = "product_name", nullable = false)
     private String productName;
 
-    @Column(name = "product_id", nullable = false)
-    private String productId;
+    private UUID productId;
 
-    @Column(name = "product_text", nullable = false)
     private String productText;
 
-    @OneToMany(
-            mappedBy = "rule",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
+    @OneToMany(mappedBy = "rule", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RuleConditionEntity> conditions;
-
-    // getters & setters
 
     public UUID getId() {
         return id;
@@ -47,11 +37,11 @@ public class RuleEntity {
         this.productName = productName;
     }
 
-    public String getProductId() {
+    public UUID getProductId() {
         return productId;
     }
 
-    public void setProductId(String productId) {
+    public void setProductId(UUID productId) {
         this.productId = productId;
     }
 
