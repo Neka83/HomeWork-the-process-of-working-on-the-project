@@ -8,32 +8,62 @@ import java.util.UUID;
 @Service
 public class RuleConditionEvaluatorImpl implements RuleConditionEvaluator {
 
+    private final UserActivityService userActivityService;
+
+    public RuleConditionEvaluatorImpl(UserActivityService userActivityService) {
+        this.userActivityService = userActivityService;
+    }
+
     @Override
     public boolean evaluate(UUID userId, RuleConditionEntity condition) {
 
+        RuleConditionType type =
+                RuleConditionType.from(condition.getQuery());
+
+        // arguments хранятся как строка: "DEBIT,DEPOSIT,>,100000"
+        String[] args = condition.getArguments().split(",");
+
         boolean result;
 
-        switch (condition.getQuery()) {
+        switch (type) {
 
-            case "ALWAYS_TRUE":
-                result = true;
+            case USER_OF:
+                result = userActivityService.isUserOf(
+                        userId,
+                        args[0]
+                );
                 break;
 
-            case "ALWAYS_FALSE":
-                result = false;
+            case ACTIVE_USER_OF:
+                result = userActivityService.isActiveUserOf(
+                        userId,
+                        args[0]
+                );
                 break;
 
-            case "USER_ID_STARTS_WITH":
-                result = userId.toString()
-                        .startsWith(condition.getArguments());
+            case TRANSACTION_SUM_COMPARE:
+                result = userActivityService.compareTransactionSum(
+                        userId,
+                        args[0], // product type
+                        args[1], // transaction type
+                        args[2], // operator
+                        Integer.parseInt(args[3]) // value
+                );
+                break;
+
+            case TRANSACTION_SUM_COMPARE_DEPOSIT_WITHDRAW:
+                result = userActivityService.compareDepositWithdraw(
+                        userId,
+                        args[0], // product type
+                        args[1]  // operator
+                );
                 break;
 
             default:
-                // неизвестное правило — считаем ложным
                 result = false;
         }
 
-        // поддержка negate
+        // ⚠️ ОБЯЗАТЕЛЬНО учитываем negate (по ТЗ)
         return condition.isNegate() ? !result : result;
     }
 }
