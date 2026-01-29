@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.starbank.recommendation_service.rules.dto.RuleConditionDto;
 import ru.starbank.recommendation_service.rules.dto.RuleDto;
+import ru.starbank.recommendation_service.rules.dto.RuleListResponseDto;
 import ru.starbank.recommendation_service.rules.entity.RuleConditionEntity;
 import ru.starbank.recommendation_service.rules.entity.RuleEntity;
 import ru.starbank.recommendation_service.rules.repository.RuleRepository;
@@ -18,52 +19,75 @@ public class RuleServiceImpl implements RuleService {
 
     private final RuleRepository ruleRepository;
 
+    // =========================
+    // CREATE RULE
+    // =========================
     @Override
     public RuleDto create(RuleDto dto) {
 
         RuleEntity rule = new RuleEntity();
+        rule.setId(UUID.randomUUID());
+        rule.setProductId(dto.getProductId());
         rule.setProductName(dto.getProductName());
         rule.setProductText(dto.getProductText());
 
-        List<RuleConditionEntity> conditions =
-                dto.getRules().stream()
-                        .map(c -> {
-                            RuleConditionEntity e = new RuleConditionEntity();
-                            e.setQuery(c.getQuery());
-                            e.setArguments(String.join(",", c.getArguments()));
-                            e.setNegate(c.isNegate());
-                            e.setRule(rule);
-                            return e;
-                        })
-                        .collect(Collectors.toList());
+        List<RuleConditionEntity> conditions = dto.getRules().stream()
+                .map(c -> {
+                    RuleConditionEntity e = new RuleConditionEntity();
+                    e.setQuery(c.getQuery());
+                    e.setArguments(String.join(",", c.getArguments()));
+                    e.setNegate(c.isNegate());
+                    e.setRule(rule);
+                    return e;
+                })
+                .toList();
 
         rule.setConditions(conditions);
 
-        RuleEntity saved = ruleRepository.save(rule);
-        dto.setId(saved.getId());
+        ruleRepository.save(rule);
 
         return dto;
     }
 
+    // =========================
+    // GET ALL RULES
+    // =========================
     @Override
-    public List<RuleDto> findAll() {
-        return ruleRepository.findAll()
+    public RuleListResponseDto getAll() {
+
+        List<RuleDto> rules = ruleRepository.findAll()
                 .stream()
-                .map(this::toDto)
-                .collect(Collectors.toList());
+                .map(rule -> {
+                    RuleDto dto = new RuleDto();
+                    dto.setId(rule.getId());
+                    dto.setProductId(rule.getProductId());
+                    dto.setProductName(rule.getProductName());
+                    dto.setProductText(rule.getProductText());
+
+                    List<RuleConditionDto> conditions = rule.getConditions()
+                            .stream()
+                            .map(c -> {
+                                RuleConditionDto cd = new RuleConditionDto();
+                                cd.setQuery(c.getQuery());
+                                cd.setArguments(List.of(c.getArguments().split(",")));
+                                cd.setNegate(c.isNegate());
+                                return cd;
+                            })
+                            .toList();
+
+                    dto.setRules(conditions);
+                    return dto;
+                })
+                .toList();
+
+        return new RuleListResponseDto(rules);
     }
 
+    // =========================
+    // DELETE RULE
+    // =========================
     @Override
     public void deleteById(UUID id) {
         ruleRepository.deleteById(id);
-    }
-
-    private RuleDto toDto(RuleEntity entity) {
-        RuleDto dto = new RuleDto();
-        dto.setId(entity.getId());
-        dto.setProductName(entity.getProductName());
-        dto.setProductText(entity.getProductText());
-        dto.setRules(List.of());
-        return dto;
     }
 }

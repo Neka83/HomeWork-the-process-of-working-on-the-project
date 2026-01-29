@@ -99,3 +99,19 @@ Lombok
 Реализовано объединение правил
 
 API возвращает корректный результат
+
+
+# Recommendation Service
+
+Spring Boot service for generating product recommendations.
+
+## Available endpoints
+
+- GET /recommendation/{userId}
+- GET /rule/stats
+- POST /management/clear-caches
+- GET /management/info
+
+## Build
+
+./mvnw package

@@ -17,9 +17,11 @@ public class RuleConditionEntity {
 
     private boolean negate;
 
-    @ManyToOne
-    @JoinColumn(name = "rule_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "rule_id", nullable = false)
     private RuleEntity rule;
+
+    // ===== getters =====
 
     public Long getId() {
         return id;
@@ -29,28 +31,30 @@ public class RuleConditionEntity {
         return query;
     }
 
-    public void setQuery(String query) {
-        this.query = query;
-    }
-
     public String getArguments() {
         return arguments;
-    }
-
-    public void setArguments(String arguments) {
-        this.arguments = arguments;
     }
 
     public boolean isNegate() {
         return negate;
     }
 
-    public void setNegate(boolean negate) {
-        this.negate = negate;
-    }
-
     public RuleEntity getRule() {
         return rule;
+    }
+
+    // ===== setters =====
+
+    public void setQuery(String query) {
+        this.query = query;
+    }
+
+    public void setArguments(String arguments) {
+        this.arguments = arguments;
+    }
+
+    public void setNegate(boolean negate) {
+        this.negate = negate;
     }
 
     public void setRule(RuleEntity rule) {

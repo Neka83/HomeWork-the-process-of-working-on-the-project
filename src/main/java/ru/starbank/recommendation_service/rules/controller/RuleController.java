@@ -1,12 +1,13 @@
 package ru.starbank.recommendation_service.rules.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.starbank.recommendation_service.rules.dto.RuleDto;
+import ru.starbank.recommendation_service.rules.dto.RuleListResponseDto;
+import ru.starbank.recommendation_service.rules.dto.RuleStatsResponseDto;
 import ru.starbank.recommendation_service.rules.service.RuleService;
+import ru.starbank.recommendation_service.rules.service.RuleStatService;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -15,20 +16,37 @@ import java.util.UUID;
 public class RuleController {
 
     private final RuleService ruleService;
+    private final RuleStatService ruleStatService;
 
+    // =========================
+    // CREATE RULE
+    // =========================
     @PostMapping
     public RuleDto create(@RequestBody RuleDto dto) {
         return ruleService.create(dto);
     }
 
+    // =========================
+    // GET ALL RULES
+    // =========================
     @GetMapping
-    public List<RuleDto> findAll() {
-        return ruleService.findAll();
+    public RuleListResponseDto getAll() {
+        return ruleService.getAll();
     }
 
+    // =========================
+    // DELETE RULE
+    // =========================
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable UUID id) {
         ruleService.deleteById(id);
+    }
+
+    // =========================
+    // GET RULE STATS
+    // =========================
+    @GetMapping("/stats")
+    public RuleStatsResponseDto getStats() {
+        return new RuleStatsResponseDto(ruleStatService.getStats());
     }
 }

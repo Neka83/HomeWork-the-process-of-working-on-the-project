@@ -4,48 +4,45 @@ import org.springframework.stereotype.Service;
 import ru.starbank.recommendation_service.rules.entity.RuleConditionEntity;
 import ru.starbank.recommendation_service.rules.entity.RuleEntity;
 import ru.starbank.recommendation_service.rules.repository.RuleRepository;
+import lombok.RequiredArgsConstructor;
+import ru.starbank.recommendation_service.dto.RecommendationDto;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class DynamicRuleRecommendationService {
 
     private final RuleRepository ruleRepository;
     private final RuleConditionEvaluator ruleConditionEvaluator;
+    private final RuleStatService ruleStatService;
 
-    public DynamicRuleRecommendationService(
-            RuleRepository ruleRepository,
-            RuleConditionEvaluator ruleConditionEvaluator
-    ) {
-        this.ruleRepository = ruleRepository;
-        this.ruleConditionEvaluator = ruleConditionEvaluator;
-    }
-
-    public List<String> getRecommendations(UUID userId) {
-        List<String> result = new ArrayList<>();
+    public List<RecommendationDto> recommend(UUID userId) {
 
         List<RuleEntity> rules = ruleRepository.findAll();
 
-        for (RuleEntity rule : rules) {
-            boolean rulePassed = true;
+        return rules.stream()
+                .filter(rule -> {
+                    boolean matched = rule.getConditions()
+                            .stream()
+                            .allMatch(condition ->
+                                    ruleConditionEvaluator.evaluate(userId, condition)
+                            );
 
-            for (RuleConditionEntity condition : rule.getConditions()) {
-                boolean conditionResult =
-                        ruleConditionEvaluator.evaluate(userId, condition);
+                    if (matched) {
+                        // считаем статистику ТОЛЬКО если правило сработало
+                        ruleStatService.increment(rule);
+                    }
 
-                if (!conditionResult) {
-                    rulePassed = false;
-                    break;
-                }
-            }
-
-            if (rulePassed) {
-                result.add(rule.getProductName());
-            }
-        }
-
-        return result;
+                    return matched;
+                })
+                .map(rule -> new RecommendationDto(
+                        rule.getProductId(),
+                        rule.getProductName(),
+                        rule.getProductText()
+                ))
+                .toList();
     }
 }

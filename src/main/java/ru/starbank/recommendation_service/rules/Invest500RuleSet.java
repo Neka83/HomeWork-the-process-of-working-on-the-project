@@ -2,9 +2,11 @@ package ru.starbank.recommendation_service.rules;
 
 import org.springframework.stereotype.Component;
 import ru.starbank.recommendation_service.dto.RecommendationDto;
+import org.springframework.stereotype.Component;
 
 @Component
 public class Invest500RuleSet implements RecommendationRuleSet {
+
 
     @Override
     public boolean isApplicable(String userId) {

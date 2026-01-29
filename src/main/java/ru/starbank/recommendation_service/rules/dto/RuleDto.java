@@ -7,16 +7,19 @@ import java.util.UUID;
 public class RuleDto {
 
     private UUID id;
+    private String productId;
     private String productName;
     private String productText;
 
-    // список условий правила
     private List<RuleConditionDto> rules = new ArrayList<>();
 
-    // ===== getters =====
-
+    // getters
     public UUID getId() {
         return id;
+    }
+
+    public String getProductId() {
+        return productId;
     }
 
     public String getProductName() {
@@ -31,10 +34,13 @@ public class RuleDto {
         return rules;
     }
 
-    // ===== setters =====
-
+    // setters
     public void setId(UUID id) {
         this.id = id;
+    }
+
+    public void setProductId(String productId) {
+        this.productId = productId;
     }
 
     public void setProductName(String productName) {

@@ -3,8 +3,8 @@ package ru.starbank.recommendation_service.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.starbank.recommendation_service.dto.RecommendationDto;
-import ru.starbank.recommendation_service.rules.service.DynamicRuleRecommendationService;
 import ru.starbank.recommendation_service.rules.RecommendationRuleSet;
+import ru.starbank.recommendation_service.rules.service.DynamicRuleRecommendationService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,26 +21,19 @@ public class RecommendationService {
 
         List<RecommendationDto> result = new ArrayList<>();
 
-        // 1️⃣ Статические правила
+        // =========================
+        // 1. Статические правила
+        // =========================
         for (RecommendationRuleSet ruleSet : ruleSets) {
             if (ruleSet.isApplicable(userId.toString())) {
                 result.add(ruleSet.getRecommendation());
             }
         }
 
-        // 2️⃣ Динамические правила (из БД)
-        List<String> dynamicProducts =
-                dynamicRuleRecommendationService.getRecommendations(userId);
-
-        for (String productName : dynamicProducts) {
-            result.add(
-                    new RecommendationDto(
-                            productName,
-                            productName,
-                            "Dynamic rule recommendation"
-                    )
-            );
-        }
+        // =========================
+        // 2. Динамические правила
+        // =========================
+        result.addAll(dynamicRuleRecommendationService.recommend(userId));
 
         return result;
     }
