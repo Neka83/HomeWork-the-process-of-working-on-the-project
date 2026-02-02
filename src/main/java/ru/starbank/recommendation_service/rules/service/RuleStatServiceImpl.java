@@ -8,7 +8,6 @@ import ru.starbank.recommendation_service.rules.entity.RuleEntity;
 import ru.starbank.recommendation_service.rules.entity.RuleStatEntity;
 import ru.starbank.recommendation_service.rules.repository.RuleRepository;
 import ru.starbank.recommendation_service.rules.repository.RuleStatRepository;
-import java.util.UUID;
 
 import java.util.List;
 import java.util.Map;
@@ -21,50 +20,49 @@ public class RuleStatServiceImpl implements RuleStatService {
     private final RuleStatRepository ruleStatRepository;
     private final RuleRepository ruleRepository;
 
-    // =========================
-    // INCREMENT STAT
-    // =========================
+    // =====================
+    // INCREMENT
+    // =====================
     @Override
     @Transactional
     public void increment(RuleEntity rule) {
+
         RuleStatEntity stat = ruleStatRepository
                 .findByRule(rule)
                 .orElseGet(() -> {
-                    RuleStatEntity s = new RuleStatEntity();
-                    s.setRule(rule);
-                    return s;
+                    RuleStatEntity newStat = new RuleStatEntity();
+                    newStat.setRule(rule);
+                    newStat.setCount(0L);
+                    return newStat;
                 });
 
-        stat.increment();
+        stat.setCount(stat.getCount() + 1);
         ruleStatRepository.save(stat);
     }
 
-    // =========================
-    // GET ALL STATS (WITH ZERO)
-    // =========================
+    // =====================
+    // GET STATS (ВАЖНО)
+    // =====================
     @Override
     public List<RuleStatDto> getStats() {
 
-        // 1️⃣ Все правила
-        List<RuleEntity> allRules = ruleRepository.findAll();
+        // все правила
+        List<RuleEntity> rules = ruleRepository.findAll();
 
-        // 2️⃣ Вся существующая статистика
-        Map<UUID, RuleStatEntity> statsByRuleId =
-                ruleStatRepository.findAll()
-                        .stream()
-                        .collect(Collectors.toMap(
-                                stat -> stat.getRule().getId(),
-                                stat -> stat
-                        ));
+        // статистика, которая есть в БД
+        Map<RuleEntity, Long> statsMap = ruleStatRepository.findAll()
+                .stream()
+                .collect(Collectors.toMap(
+                        RuleStatEntity::getRule,
+                        RuleStatEntity::getCount
+                ));
 
-        // 3️⃣ Собираем ответ
-        return allRules.stream()
-                .map(rule -> {
-                    RuleStatEntity stat = statsByRuleId.get(rule.getId());
-                    long count = (stat != null) ? stat.getCount() : 0;
-
-                    return new RuleStatDto(rule.getId(), count);
-                })
+        // возвращаем ВСЕ правила, даже с 0
+        return rules.stream()
+                .map(rule -> new RuleStatDto(
+                        rule.getId(),
+                        statsMap.getOrDefault(rule, 0L)
+                ))
                 .toList();
     }
 }

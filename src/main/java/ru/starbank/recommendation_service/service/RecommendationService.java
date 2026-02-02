@@ -21,18 +21,14 @@ public class RecommendationService {
 
         List<RecommendationDto> result = new ArrayList<>();
 
-        // =========================
-        // 1. Статические правила
-        // =========================
+        // 1️⃣ статические правила
         for (RecommendationRuleSet ruleSet : ruleSets) {
             if (ruleSet.isApplicable(userId.toString())) {
                 result.add(ruleSet.getRecommendation());
             }
         }
 
-        // =========================
-        // 2. Динамические правила
-        // =========================
+        // 2️⃣ динамические правила (ВАЖНО!)
         result.addAll(dynamicRuleRecommendationService.recommend(userId));
 
         return result;

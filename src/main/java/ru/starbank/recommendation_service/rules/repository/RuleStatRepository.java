@@ -5,9 +5,8 @@ import ru.starbank.recommendation_service.rules.entity.RuleEntity;
 import ru.starbank.recommendation_service.rules.entity.RuleStatEntity;
 
 import java.util.Optional;
-import java.util.UUID;
 
-public interface RuleStatRepository extends JpaRepository<RuleStatEntity, UUID> {
+public interface RuleStatRepository extends JpaRepository<RuleStatEntity, Long> {
 
     Optional<RuleStatEntity> findByRule(RuleEntity rule);
 }
