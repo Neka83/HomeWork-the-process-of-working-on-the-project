@@ -1,117 +1,81 @@
 # Recommendation Service
 
-Сервис рекомендаций банковских продуктов с поддержкой:
-- статических правил (в коде)
-- динамических правил (из БД)
+## 📌 Description
+Recommendation Service is a Spring Boot backend application that provides product recommendations to users.
 
-## 🚀 Функциональность
+Recommendations are generated using:
+- static rules
+- dynamic rules (managed by managers)
 
-### 1. Статические правила
-Реализованы через интерфейс `RecommendationRuleSet`.
-
-Каждое правило:
-- проверяет применимость к пользователю
-- возвращает рекомендацию
-
-Примеры:
-- Invest500RuleSet
-- SimpleCreditRuleSet
-- TopSavingRuleSet
-
-Все правила автоматически подхватываются Spring через `@Component`.
+The service exposes:
+- REST API
+- Telegram Bot
+- Management endpoints
 
 ---
 
-### 2. Динамические правила
-Динамические правила хранятся в БД и обрабатываются через:
-- `RuleEntity`
-- `RuleConditionEntity`
-- `DynamicRuleRecommendationService`
-
-Условия правил вычисляются через `RuleConditionEvaluator`.
-
----
-
-### 3. Объединение правил
-Класс `RecommendationService`:
-- собирает рекомендации из статических правил
-- добавляет рекомендации из динамических правил
-- возвращает единый список рекомендаций
+## 🛠 Tech Stack
+- Java 17
+- Spring Boot
+- Spring Data JPA (Hibernate)
+- H2 Database
+- Liquibase
+- Maven
+- Telegram Bot API
+- OpenAPI (Swagger)
 
 ---
 
-## 📡 API
+## 👥 Actors
+- User — receives recommendations via REST API or Telegram
+- Manager — manages dynamic rules and views statistics
+- External system — clears cache and checks service health/info
 
-### Получить рекомендации пользователя
+---
 
-GET /recommendation/{userId}
+## 🚀 Run locally
 
+### Build project
 
-Пример:
-
-
-GET http://localhost:8080/recommendation/11111111-1111-1111-1111-111111111111
-
-
-### Пример ответа
-```json
-{
-  "user_id": "11111111-1111-1111-1111-111111111111",
-  "recommendations": [
-    {
-      "id": "INVEST_500",
-      "name": "Invest 500",
-      "text": "Investment starting from 500"
-    },
-    {
-      "id": "SIMPLE_CREDIT",
-      "name": "Simple Credit",
-      "text": "Quick credit with minimal documents"
-    },
-    {
-      "id": "TOP_SAVING",
-      "name": "Top Saving",
-      "text": "Best saving account with high interest"
-    }
-  ]
-}
-
-⚙️ Технологии
-
-Java
-
-Spring Boot
-
-Spring Web
-
-Spring Data JPA
-
-H2 / PostgreSQL
-
-Lombok
-
-✅ Статус задания
-
-Реализованы статические правила
-
-Реализованы динамические правила
-
-Реализовано объединение правил
-
-API возвращает корректный результат
+./mvnw clean package
 
 
-# Recommendation Service
+### Run application
 
-Spring Boot service for generating product recommendations.
 
-## Available endpoints
+java -jar target/recommendation-service.jar
 
-- GET /recommendation/{userId}
-- GET /rule/stats
-- POST /management/clear-caches
-- GET /management/info
 
-## Build
+Application will start on:
 
-./mvnw package
+
+http://localhost:8080
+
+
+---
+
+## 📚 API Documentation
+After start open:
+
+
+http://localhost:8080/swagger-ui.html
+
+
+---
+
+## 🔧 Environment Variables
+
+| Variable | Description |
+|----------|-------------|
+SPRING_DATASOURCE_URL | database url |
+SPRING_DATASOURCE_USERNAME | db username |
+SPRING_DATASOURCE_PASSWORD | db password |
+TELEGRAM_BOT_TOKEN | telegram bot token |
+
+---
+
+## 📖 Project Documentation
+See GitHub Wiki for:
+- Requirements
+- Architecture diagrams
+- Deployment guide
