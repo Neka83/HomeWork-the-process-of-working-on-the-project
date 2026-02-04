@@ -78,4 +78,4 @@ TELEGRAM_BOT_TOKEN | telegram bot token |
 See GitHub Wiki for:
 - Requirements
 - Architecture diagrams
-- Deployment guide
+- Deployment guide.
