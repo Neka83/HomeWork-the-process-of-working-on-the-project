@@ -63,6 +63,13 @@
             <version>6.9.7.1</version>
         </dependency>
 
+        <!-- 🔹 SWAGGER / OPENAPI (добавили для документации API) -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.5.0</version>
+        </dependency>
+
         <!-- TESTS -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
