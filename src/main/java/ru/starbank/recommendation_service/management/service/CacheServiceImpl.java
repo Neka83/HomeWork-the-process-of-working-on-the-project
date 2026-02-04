@@ -7,6 +7,9 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class CacheServiceImpl implements CacheService {
 
+    /**
+     * Clears application cache.
+     */
     @Override
     public void clearAll() {
         // Заглушка по ТЗ — позже тут будет реальная очистка кешей

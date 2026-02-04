@@ -17,18 +17,22 @@ public class RecommendationService {
     private final List<RecommendationRuleSet> ruleSets;
     private final DynamicRuleRecommendationService dynamicRuleRecommendationService;
 
+    /**
+     * Calculates recommendations using static and dynamic rules.
+     */
+
     public List<RecommendationDto> getRecommendations(UUID userId) {
 
         List<RecommendationDto> result = new ArrayList<>();
 
-        // 1️⃣ статические правила
+
         for (RecommendationRuleSet ruleSet : ruleSets) {
             if (ruleSet.isApplicable(userId.toString())) {
                 result.add(ruleSet.getRecommendation());
             }
         }
 
-        // 2️⃣ динамические правила (ВАЖНО!)
+
         result.addAll(dynamicRuleRecommendationService.recommend(userId));
 
         return result;

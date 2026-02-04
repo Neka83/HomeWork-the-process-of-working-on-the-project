@@ -19,9 +19,9 @@ public class RuleServiceImpl implements RuleService {
 
     private final RuleRepository ruleRepository;
 
-    // =========================
-    // CREATE RULE
-    // =========================
+    /**
+     * Creates or updates dynamic rule.
+     */
     @Override
     public RuleDto create(RuleDto dto) {
 

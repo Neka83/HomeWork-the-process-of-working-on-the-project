@@ -17,6 +17,9 @@ public class RecommendationController {
         this.recommendationService = recommendationService;
     }
 
+    /**
+     * Returns recommendations for user via REST API.
+     */
     @GetMapping("/recommendation/{userId}")
     public RecommendationResponse getRecommendation(@PathVariable String userId) {
         return new RecommendationResponse(
