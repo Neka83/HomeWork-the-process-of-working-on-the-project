@@ -1,34 +1,40 @@
 package ru.starbank.recommendation_service.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.starbank.recommendation_service.dto.RecommendationDto;
-import ru.starbank.recommendation_service.repository.RecommendationRepository;
 import ru.starbank.recommendation_service.rules.RecommendationRuleSet;
+import ru.starbank.recommendation_service.rules.service.DynamicRuleRecommendationService;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class RecommendationService {
 
-    private final RecommendationRepository repository;
     private final List<RecommendationRuleSet> ruleSets;
+    private final DynamicRuleRecommendationService dynamicRuleRecommendationService;
 
-    public RecommendationService(
-            RecommendationRepository repository,
-            List<RecommendationRuleSet> ruleSets
-    ) {
-        this.repository = repository;
-        this.ruleSets = ruleSets;
-    }
+    /**
+     * Calculates recommendations using static and dynamic rules.
+     */
 
-    public int testTransactionsCount() {
-        return repository.countAllTransactions();
-    }
+    public List<RecommendationDto> getRecommendations(UUID userId) {
 
-    public List<RecommendationDto> getRecommendations(String userId) {
-        return ruleSets.stream()
-                .filter(rule -> rule.isApplicable(userId))
-                .map(RecommendationRuleSet::getRecommendation)
-                .toList();
+        List<RecommendationDto> result = new ArrayList<>();
+
+
+        for (RecommendationRuleSet ruleSet : ruleSets) {
+            if (ruleSet.isApplicable(userId.toString())) {
+                result.add(ruleSet.getRecommendation());
+            }
+        }
+
+
+        result.addAll(dynamicRuleRecommendationService.recommend(userId));
+
+        return result;
     }
 }

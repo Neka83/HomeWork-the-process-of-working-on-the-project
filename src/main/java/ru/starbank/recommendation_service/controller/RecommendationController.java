@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.starbank.recommendation_service.dto.RecommendationResponse;
 import ru.starbank.recommendation_service.service.RecommendationService;
 
+import java.util.UUID;
+
 @RestController
 public class RecommendationController {
 
@@ -15,18 +17,14 @@ public class RecommendationController {
         this.recommendationService = recommendationService;
     }
 
+    /**
+     * Returns recommendations for user via REST API.
+     */
     @GetMapping("/recommendation/{userId}")
-    public RecommendationResponse getRecommendation(
-            @PathVariable String userId
-    ) {
+    public RecommendationResponse getRecommendation(@PathVariable String userId) {
         return new RecommendationResponse(
                 userId,
-                recommendationService.getRecommendations(userId)
+                recommendationService.getRecommendations(UUID.fromString(userId))
         );
-    }
-
-    @GetMapping("/ping")
-    public String ping() {
-        return "OK";
     }
 }

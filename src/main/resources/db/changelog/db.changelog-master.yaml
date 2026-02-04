@@ -1,0 +1,134 @@
+databaseChangeLog:
+
+  # =========================
+  # 1. RULES
+  # =========================
+  - changeSet:
+      id: 1
+      author: neka
+      changes:
+        - createTable:
+            tableName: rules
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: product_id
+                  type: varchar(255)
+              - column:
+                  name: product_name
+                  type: varchar(255)
+              - column:
+                  name: product_text
+                  type: text
+
+        - createTable:
+            tableName: rule_conditions
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: query
+                  type: varchar(255)
+              - column:
+                  name: arguments
+                  type: text
+              - column:
+                  name: negate
+                  type: boolean
+              - column:
+                  name: rule_id
+                  type: uuid
+
+        - addForeignKeyConstraint:
+            baseTableName: rule_conditions
+            baseColumnNames: rule_id
+            referencedTableName: rules
+            referencedColumnNames: id
+            constraintName: fk_rule_conditions_rule
+
+  # =========================
+  # 2. RULE STATS
+  # =========================
+  - changeSet:
+      id: 2
+      author: neka
+      changes:
+        - createTable:
+            tableName: rule_stats
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: rule_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: count
+                  type: bigint
+                  constraints:
+                    nullable: false
+
+        - addForeignKeyConstraint:
+            baseTableName: rule_stats
+            baseColumnNames: rule_id
+            referencedTableName: rules
+            referencedColumnNames: id
+            constraintName: fk_rule_stats_rule
+            onDelete: CASCADE
+
+  # =========================
+  # 3. USERS
+  # =========================
+  - changeSet:
+      id: 3
+      author: neka
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+
+              - column:
+                  name: uuid
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    unique: true
+
+              - column:
+                  name: username
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+
+              - column:
+                  name: first_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: last_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
